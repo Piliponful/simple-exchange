@@ -1,0 +1,22 @@
+{
+  "name": "trvl-token",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "testrpc": "docker run -p 8545:8545 --rm --name testrpc -d desmart/testrpc:latest",
+    "kill_testrpc": "docker rm -f testrpc",
+    "start": "npm run testrpc; truffle compile | truffle migrate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ethereumjs-testrpc": "^6.0.3",
+    "truffle": "^4.1.5"
+  }
+}
