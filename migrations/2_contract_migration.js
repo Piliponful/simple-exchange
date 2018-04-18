@@ -16,7 +16,7 @@ module.exports = deployer => {
         .then(() => {
           const token2Addr = Token.address
           console.log('TOKEN 2 ADDRESS: ', Token.address)
-          return deployer.deploy(Exhcange, token1Addr, token2Addr, 2)
+          return deployer.deploy(Exhcange, token1Addr, token2Addr, 2, { value: 9000000 })
             .then(args => { console.log('ARGS: ', args) })
         })
     })

@@ -49,10 +49,10 @@ contract simpleExchange is usingOraclize {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            oraclize_query("URL", "json(https://api.bitfinex.com/v2/ticker/tBTCUSD).0", "ccy1=BTC&ccy2=USD");
+            oraclize_query("URL", "json(https://api.bitfinex.com/v1/pubticker/btcusd).mid");
         }
     }
-    function buyOrder(string fromName, string toName, uint256 toAmount) public validName(fromName, toName) returns (uint256) {
+    function createOrder(string fromName, string toName, uint256 toAmount) public validName(fromName, toName) returns (uint256) {
         require(toAmount > 0);
         currOrderId++;
         Order memory newOrder = Order(msg.sender, currOrderId, fromName, toName, toAmount, toAmount * exchangeRate + getFee(toAmount * exchangeRate, fee), false);
@@ -65,7 +65,7 @@ contract simpleExchange is usingOraclize {
         PriceUpdate(result);
         updatePrice();
     }
-    function executeBuyOrder(uint256 id) public returns (bool) {
+    function executeOrder(uint256 id) public returns (bool) {
         Order userOrder = ordersById[id];
         require(userOrder.who == msg.sender);
         ERC20 fromToken = tokenByName[userOrder.from];
