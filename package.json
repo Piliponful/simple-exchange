@@ -11,7 +11,7 @@
     "compile": "truffle compile",
     "linter": "solium -d contracts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "blockchain": "docker run -p 8545:8545 --rm --name testrpc -d desmart/testrpc:latest testrpc --network-id 1337",
+    "blockchain": "docker run -p 8545:8545 --rm --name testrpc -d desmart/testrpc:latest testrpc --network-id 1337 --unlock 0,9",
     "kill": "docker rm -f testrpc",
     "start": "npm run blockchain; truffle compile | truffle migrate"
   },
@@ -22,6 +22,7 @@
     "ethereumjs-testrpc": "^6.0.3",
     "solium": "^1.1.6",
     "truffle": "^4.1.5",
+    "web3": "^1.0.0-beta.34",
     "zeppelin-solidity": "1.8.0"
   }
 }

@@ -2,7 +2,7 @@ pragma solidity 0.4.21;
 
 import "./Token.sol";
 import "zeppelin-solidity/contracts/token/ERC20/DetailedERC20.sol";
-import "./Oraclize.sol";
+import "./oraclizeAPI.sol";
 import "./StringUtils.sol";
 
 contract simpleExchange is usingOraclize {
@@ -10,6 +10,8 @@ contract simpleExchange is usingOraclize {
     DetailedERC20 token1;
     DetailedERC20 token2;
     mapping(string => DetailedERC20) tokenByName;
+        // oraclize callback types:
+    enum oraclizeState { rate1, rate2 }
 
     address admin;
 
@@ -28,8 +30,8 @@ contract simpleExchange is usingOraclize {
     mapping (uint256=>Order) ordersById;
 
     uint32 public fee;
-    uint32 highestBid;
-    uint32 lowestAsk;
+    uint32 fromToRate;
+    uint32 toFromRate;
     string public resultOfQuery;
     event PriceUpdate(string resultOfQuery);
     event LogNewOraclizeQuery(string description);
@@ -59,7 +61,7 @@ contract simpleExchange is usingOraclize {
     function buyOrder(string fromName, string toName, uint256 toAmount) public validName(fromName, toName) returns (uint256) {
         require(toAmount > 0);
         currOrderId++;
-        Order memory newOrder = Order(msg.sender, currOrderId, fromName, toName, toAmount, lowestAsk + this.fee(), false);
+        Order memory newOrder = Order(msg.sender, currOrderId, fromName, toName, toAmount, toAmount * lowestAsk + this.fee(), false);
         ordersById[currOrderId] = newOrder;
         return newOrder.id;
     }
@@ -77,11 +79,11 @@ contract simpleExchange is usingOraclize {
         lowestAsk = stringToUint(part.toString());
         getPrice();
     }
-    function buy(uint256 id) public returns (bool) {
+    function executeBuyOrder(uint256 id) public returns (bool) {
         Order userOrder = ordersById[id];
-        ERC20 sellToken = tokenByName[userOrder.from];
+        ERC20 buyForToken = tokenByName[userOrder.from];
         ERC20 buyToken = tokenByName[userOrder.to];
-        if (sellToken.allowance(msg.sender, address(this)) >= ordersById[id].amountFrom) {
+        if (buyForToken.allowance(msg.sender, address(this)) >= ordersById[id].amountFrom) {
             buyToken.transferFrom(msg.sender, this, userOrder.amountFrom);
             userOrder.taken = true;
         } else {
@@ -95,9 +97,15 @@ contract simpleExchange is usingOraclize {
         }
         return false;
     }
-    // function sell(string tokenName, uint256 amount) public validName(tokenName) {
 
-    // }
+    function sellOrder(string fromName, string toName, uint256 fromAmount) public validName(fromName, toName) returns (uint256) {
+        require(toAmount > 0);
+        currOrderId++;
+        Order memory newOrder = Order(msg.sender, currOrderId, fromName, toName, toAmount, fromAmount * highestBid + this.fee(), false);
+        ordersById[currOrderId] = newOrder;
+        return newOrder.id;
+    }
+
     modifier validName(string firstTokenName, string secondTokenName) {
         require(
             keccak256(firstTokenName) != keccak256(secondTokenName)
