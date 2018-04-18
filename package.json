@@ -11,7 +11,7 @@
     "compile": "truffle compile",
     "linter": "solium -d contracts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "blockchain": "docker run -p 8545:8545 --rm --name testrpc -d desmart/testrpc:latest",
+    "blockchain": "docker run -p 8545:8545 --rm --name testrpc -d desmart/testrpc:latest testrpc --network-id 1337",
     "kill": "docker rm -f testrpc",
     "start": "npm run blockchain; truffle compile | truffle migrate"
   },
