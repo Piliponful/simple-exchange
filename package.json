@@ -11,7 +11,7 @@
     "compile": "truffle compile",
     "linter": "solium -d contracts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "blockchain": "docker run -p 8545:8545 --rm --name testrpc -d desmart/testrpc:latest testrpc --network-id 1337 --unlock 1",
+    "blockchain": "docker run -p 8545:8545 --rm --name testrpc -d trufflesuite/ganache-cli ganache-cli --network-id 1337",
     "kill": "docker rm -f testrpc",
     "start": "npm run blockchain; truffle compile | truffle migrate"
   },
@@ -19,7 +19,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ethereumjs-testrpc": "^6.0.3",
     "request": "^2.85.0",
     "solium": "^1.1.6",
     "truffle": "^4.0.0",
