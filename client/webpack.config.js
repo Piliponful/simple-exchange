@@ -9,11 +9,7 @@ module.exports = {
   devtool: 'source-map',
   entry: [
     'react-hot-loader/patch',
-
     'webpack/hot/only-dev-server',
-    // bundle the client for hot reloading
-    // only- means to only hot reload for successful updates
-
     `${srcDir}/index.js`
   ],
   output: {

@@ -48,30 +48,21 @@ contract simpleExchange is usingOraclize {
         updatePrice();
     }
     function getFee(uint256 whole, uint256 fee) public pure returns (uint256) {
-        return fee * 100 / whole;
+        return whole / 100 * fee;
     }
     function createOrder(string fromName, string toName, uint256 toAmount) public validName(fromName, toName) returns (uint256) {
         require(toAmount > 0);
         uint256 fromAmount;
         if (keccak256(toName) == keccak256("BTC")) {
-            fromAmount = toAmount * BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee);
+            fromAmount = toAmount * BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee, fromName);
         } else {
-            fromAmount = toAmount / BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee);
+            fromAmount = toAmount / BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee, fromName);
         }
         currOrderId++;
         Order memory newOrder = Order(msg.sender, currOrderId, fromName, toName, toAmount, fromAmount, false, false);
         ordersById[currOrderId] = newOrder;
         NewOrder(msg.sender, newOrder.id);
         return newOrder.id;
-    }
-    function executeOrder1(uint256 id) public returns (bool) {
-        Order storage userOrder = ordersById[id];
-        ERC20 fromToken = tokenByName[userOrder.from];
-        ERC20 toToken = tokenByName[userOrder.to];
-        require(userOrder.who == msg.sender);
-        require(fromToken.allowance(msg.sender, address(this)) >= ordersById[id].amountFrom);
-        require(fromToken.balanceOf(msg.sender) >= ordersById[id].amountFrom);
-        return true;
     }
     function executeOrder(uint256 id) public returns (bool) {
         Order storage userOrder = ordersById[id];
