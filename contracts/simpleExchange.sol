@@ -68,7 +68,7 @@ contract simpleExchange is usingOraclize {
         Order storage userOrder = ordersById[id];
         ERC20 fromToken = tokenByName[userOrder.from];
         ERC20 toToken = tokenByName[userOrder.to];
-        if (fromToken.allowance(msg.sender, address(this)) >= ordersById[id].amountFrom) {
+        if (!userOrder.taken && fromToken.allowance(msg.sender, address(this)) >= ordersById[id].amountFrom) {
             fromToken.transferFrom(msg.sender, this, userOrder.amountFrom);
             userOrder.taken = true;
         } else {
