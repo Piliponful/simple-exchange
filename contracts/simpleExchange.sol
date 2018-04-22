@@ -54,9 +54,9 @@ contract simpleExchange is usingOraclize {
         require(toAmount > 0);
         uint256 fromAmount;
         if (keccak256(toName) == keccak256("BTC")) {
-            fromAmount = toAmount * BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee, fromName);
+            fromAmount = toAmount * BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee);
         } else {
-            fromAmount = toAmount / BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee, fromName);
+            fromAmount = toAmount / BtcToUsdExchangeRate + getFee(toAmount * BtcToUsdExchangeRate, fee);
         }
         currOrderId++;
         Order memory newOrder = Order(msg.sender, currOrderId, fromName, toName, toAmount, fromAmount, false, false);
